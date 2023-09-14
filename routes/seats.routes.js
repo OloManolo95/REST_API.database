@@ -45,8 +45,11 @@ router.route('/seats').post((req, res) => {
 
 
   const id = uuidv4();
-  const newSeat = { id, day: parsedDay, seat: parsedDay, client, email };
+  const newSeat = { id, day: parsedDay, seat: parsedSeat, client, email };
   db.seats.push(newSeat);
+  // websocket
+  console.log(db.seats);
+  req.io.emit('seatsUpdated', db.seats);
   res.status(201).json({ message: 'OK' });
 });
 
