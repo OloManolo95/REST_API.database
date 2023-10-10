@@ -1,10 +1,24 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./db');
 const path = require('path');
 const socket = require('socket.io');
+const mongoose = require('mongoose');
 
 const app = express();
+
+mongoose.connect('mongodb://localhost:27017/NewWaveDB', {
+useNewUrlParser: true,
+useUnifiedTopology: true});
+const db = mongoose.connection;
+
+db.once('open', () => {
+  console.log('Connected to the database');
+});
+db.on('error', err => console.log('Error ' + err));
+
+const server = app.listen(process.env.PORT || 8000, () => {
+  console.log('Server is running on port: 8000');
+});
 
 // import routes
 const testimonialRoutes = require('./routes/testimonials.routes');
@@ -23,9 +37,6 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const server = app.listen(process.env.PORT || 8000, () => {
-  console.log('Server is running on port: 8000');
-});
 
 const io = socket(server);
 
